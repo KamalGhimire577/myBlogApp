@@ -8,7 +8,7 @@ const app =express();
 app.use(express.json());
 // imports routes
 const authRoute = require("./routes/authRoute")
-const adminRoute=require("./routes/authRoute")
+const adminRoute=require("./routes/AdminRoute")
 // mount the auth rout at api/auth+/registeror login (for register and login)
 app.use("/api/auth",authRoute);
 app.use("/api/auth/admin",adminRoute)
