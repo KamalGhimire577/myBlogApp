@@ -9,7 +9,7 @@ const blogPostDetailModel = (sequelize,DataTypes)=>{
         primaryKey :true,
         
       },
-      AuthorId:{
+      authorId:{
         type:DataTypes.UUID,
       allowNull:false,
       

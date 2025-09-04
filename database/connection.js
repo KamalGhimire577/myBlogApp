@@ -33,5 +33,5 @@ sequelize
 
 const users = userModel(sequelize, DataTypes);
 const blogs =blogPostDetailModel(sequelize, DataTypes);
-
-module.exports = { sequelize, Sequelize, users };
+const blogbyauthor =blog_author(sequelize,DataTypes)
+module.exports = { sequelize, Sequelize, users,blogs,blogbyauthor };

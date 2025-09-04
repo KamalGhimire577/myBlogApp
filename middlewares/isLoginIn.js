@@ -1,41 +1,31 @@
-import jwt from "jsonwebtoken";
-import User from "../database/models/userModel.js";
+const jwt = require("jsonwebtoken");
+const { users } = require("../database/connection"); // use instance
 
 const isLoggedIn = async (req, res, next) => {
   try {
-    // ✅ Get token from "Authorization: Bearer <token>"
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({ message: "Please provide a valid token" });
     }
 
-    const token = authHeader.split(" ")[1]; // only token part
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // ✅ Verify token
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET 
-    );
-
-    // ✅ Find user in DB
-    const userData = await User.findByPk(decoded.id, {
-      attributes: ["id", "email", "role"], // keep only needed fields
+    const userData = await users.findByPk(decoded.id, {
+      attributes: ["id", "email", "role"],
     });
 
     if (!userData) {
       return res.status(403).json({ message: "Invalid token: user not found" });
     }
 
-    // ✅ Attach user to request (so next routes can use it)
     req.user = userData;
-
-    next(); // go ahead
+    next();
   } catch (error) {
-    return res.status(403).json({
-      message: "Invalid or expired token",
-      error: error.message,
-    });
+    return res
+      .status(403)
+      .json({ message: "Invalid or expired token", error: error.message });
   }
 };
 
-export default isLoggedIn;
+module.exports = isLoggedIn;
