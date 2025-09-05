@@ -1,10 +1,10 @@
-const { blogs, blogbyauthor } = require("../database/connection");
+const { blogs, blogbyauthor, category } = require("../database/connection");
 
 // CREATE BLOG
 const createBlog = async (req, res) => {
   try {
     const authorId = req.user.id; // from JWT middleware
-    const { blogTitle, blogDescription, blogCategory  } = req.body;
+    const { blogTitle, blogDescription, blogCategory, BlogImage } = req.body;
 
     if (!blogTitle || !blogDescription || !blogCategory) {
       return res.status(400).json({ message: "All fields are required" });
@@ -15,11 +15,18 @@ const createBlog = async (req, res) => {
       blogTitle,
       blogDescription,
       blogCategory,
-      // blogImage: BlogImage,
+      blogImage: BlogImage,
     });
 
     // Add to blogbyauthor table
     await blogbyauthor.create({ blogid: newBlog.id, authorId });
+
+    // Add to category table
+    await category.create({
+      blogId: newBlog.id,
+      blogcategory: newBlog.blogCategory,
+      authorId,
+    });
 
     res
       .status(201)
@@ -51,6 +58,13 @@ const editBlog = async (req, res) => {
       blogCategory,
       blogImage: BlogImage,
     });
+
+    // Update category table (optional: update instead of creating new)
+    await category.update(
+      { blogcategory: blog.blogCategory },
+      { where: { blogId: blog.id } }
+    );
+
     res.status(200).json({ message: "Blog updated successfully", blog });
   } catch (error) {
     console.error("Edit blog error:", error);
@@ -60,33 +74,30 @@ const editBlog = async (req, res) => {
   }
 };
 
-// GET ALL BLOGS
+// GET ALL BLOGS (only blogs table)
 const findAllBlog = async (req, res) => {
   try {
-    const allBlogs = await blogs.findAll();
+    const allBlogs = await blogs.findAll(); // only blogs table
     res.status(200).json(allBlogs);
   } catch (error) {
     console.error("Find all blogs error:", error);
-    res
-      .status(500)
-      .json({ message: "Error fetching blogs", error: error.message });
+    res.status(500).json({ message: "Error fetching blogs", error: error.message });
   }
 };
 
-// GET ONE BLOG
+// GET ONE BLOG (only blogs table)
 const findOneBlog = async (req, res) => {
   try {
     const { id } = req.params;
-    const blog = await blogs.findByPk(id);
+    const blog = await blogs.findByPk(id); // only blogs table
     if (!blog) return res.status(404).json({ message: "Blog not found" });
     res.status(200).json(blog);
   } catch (error) {
     console.error("Find blog error:", error);
-    res
-      .status(500)
-      .json({ message: "Error fetching blog", error: error.message });
+    res.status(500).json({ message: "Error fetching blog", error: error.message });
   }
 };
+
 
 // DELETE BLOG
 const deleteBlog = async (req, res) => {
@@ -99,7 +110,12 @@ const deleteBlog = async (req, res) => {
     if (blog.authorId !== authorId)
       return res.status(403).json({ message: "Not authorized" });
 
+    // Delete related entries
+    await blogbyauthor.destroy({ where: { blogid: id } });
+    await category.destroy({ where: { blogId: id } });
+
     await blog.destroy();
+
     res.status(200).json({ message: "Blog deleted successfully" });
   } catch (error) {
     console.error("Delete blog error:", error);
