@@ -7,11 +7,11 @@ const blog_author = (sequelize,DataTypes)=>{
       },
       blogid: {
         type: DataTypes.UUID,
-        
+        allowNull: false,
       },
       authorId: {
         type: DataTypes.UUID,
-        
+        allowNull: false,
       },
     });
     return blog_authorTable

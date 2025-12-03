@@ -8,13 +8,16 @@ const app =express();
 app.use(express.json());
 // imports routes
 const authRoute = require("./routes/authRoute")
-const adminRoute=require("./routes/AdminRoute")
-const blogroute =require("./routes/blogPostRoute")
+const adminAuthRoute=require("./routes/AdminRoute")
+const blogRoute =require("./routes/blogPostRoute")
+const commentRoute =require("./routes/cummentRoute")
+const adminRoute =require("./routes/adminDashboardRoute")
 // mount the auth rout at api/auth+/registeror login (for register and login)
 app.use("/api/auth",authRoute);
-app.use("/api/auth/admin",adminRoute)
-app.use("/api/blog",blogroute)
-
+app.use("/api/auth/admin",adminAuthRoute)
+app.use("/api/blog",blogRoute)
+app.use("/api/blog",commentRoute)
+app.use("/api/admin",adminRoute)
 // Start server
 const port = 5999;
 app.listen(port,()=>{

@@ -1,17 +1,21 @@
-const comment = (sequelize, DataTypes) => {
+const comments = (sequelize, DataTypes) => {
   const commentTable = sequelize.define("comment_Table", {
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    blogid: {
+    blogId: {
       type: DataTypes.UUID,
       allowNull: false,
     },
     authorId: {
       type: DataTypes.UUID,
       allowNull: false,
+    },
+    commenterId:{
+      type:DataTypes.STRING,
+      allowNull:false
     },
     commenter_Name:
     {
@@ -29,4 +33,4 @@ const comment = (sequelize, DataTypes) => {
   });
   return commentTable;
 };
-module.exports = comment;
+module.exports = comments;
