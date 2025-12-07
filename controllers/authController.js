@@ -1,7 +1,7 @@
 const {users} = require("../database/connection")
 const bcrypt= require ("bcrypt")
 const jwt = require ("jsonwebtoken")
-require("dotenv").config()
+
 const registerAuthor = async (req,res)=>{
     try {
         const {userName,email,password,phone}=req.body

@@ -7,6 +7,13 @@ const app =express();
 // hamile hamro backend rw frontent ko communication json format "key"="value" format ma garxam so tyo json lai bujhauna ko lagi 
 app.use(express.json());
 // imports routes
+app.use(
+  cors({
+    origin: [" http://localhost:5173"], // Frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true, // Allow cookies/auth
+  })
+);
 const authRoute = require("./routes/authRoute")
 const adminAuthRoute=require("./routes/AdminRoute")
 const blogRoute =require("./routes/blogPostRoute")
